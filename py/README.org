@@ -1,4 +1,4 @@
-* SAXO
+* SAXO : xml parser objects
   
   event driven parser : [ ( match(tag,attrs), object(tag,attrs) ) ]
   to walk a grammar action tree
