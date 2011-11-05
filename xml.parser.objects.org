@@ -1,0 +1,35 @@
+* SAXO
+  
+  event driven parser : [ ( match(tag,attrs), object(tag,attrs) ) ]
+  to walk a grammar action tree
+# maybe a dag (eater,event+matcher) ?+
+
+** def 1
+  C{tag, attrs} : match[i] => do object[i]
+  C{tag, attrs} : event + match[i] => do obj[i]
+  
+  HTMLParser( start(tag,attr) end(tag) data(datum) )
+  
+Root(HTMLParser) (bind.tree) xml -> binds -> ast
+  stack<HTMLParser> S
+  tree<HTMLParser>  T
+
+  def handle_*(*):
+    S.handle_*(*)
+
+** def 2
+Bind(HTMLParser)
+Nil(HTMLParser) stream -> stream #id
+
+MATCH                                 ::  PUSH
+tag('div').attrs({M('foo'):M('bar')}) ::  Bind:Code c
+ .and(div/duh:baz)		      ::    Bind:Article a >> c
+  .and(span/doh)		      ::     Bind:Intervalle >> a
+
+** description
+   The SAX Parser = ticking clock of this 'abstract machine'
+   events meaning push/pop functions (by usage of a
+   depth stack to pop result back to upper
+   function/parser parent)
+
+   HTMLParser     = functions
