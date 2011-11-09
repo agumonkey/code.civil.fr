@@ -8,19 +8,27 @@ import urllib
 import re
 import HTMLParser
 
-date="dateTexte=20100101"
-url='http://www.legifrance.gouv.fr/affichCode.do?cidTexte=LEGITEXT000006070721'
-toremove = re.compile(r"""[\r\n\t]""")
-src=re.sub(toremove,'',urllib.urlopen(url+'&'+date).read()) # stripped html
+codes = { "civil" : "LEGITEXT000006070721" }
 
-### regexp trials
-### pattern1 = re.compile(r"""a href=\"(afficheCode.do[^"]+)\"""")
-### pattern1.1 = r"""a
-### href=\"affich[^\?]+\?([^"]+)\"?>Articles.([0-9]+)....([0-9]+)"""
+class Code:
+    cache = ""
 
-#src = open("/home/dummy/articles").read()
-
-pattern2 = re.compile(r"""
+    def __init__(self,id,date):
+        self.id   = id
+        self.date = date
+        self.url  = 'http://www.legifrance.gouv.fr/affichCode.do'
+    
+    def __src__(self):
+        toremove = re.compile(r"""[\r\n\t]""")
+        if self.cache == "":
+            self.cache = re.sub(toremove,'', urllib.urlopen(self.url+'?'
+                                                            + "cidTexte="  + self.id + '&'
+                                                            + "dateTexte=" + self.date
+                                                            ).read())
+        return self.cache
+    
+    def sections(self):
+        section = re.compile(r"""
 a.            # tag
 href=         # attr
 \"            # quote
@@ -32,6 +40,13 @@ affich        #
 ....          # sep
 ([0-9]+)      # end!
 """, re.VERBOSE)
+        return [ str(Section(q,b,e)) for q,b,e in re.findall(section, self.__src__()) ]
+
+    def __repr__(self):
+        return "Code " + self.id + '@' + self.date
+
+    def __str__(self):
+        return self.__repr__()
 
 h = HTMLParser.HTMLParser() # to unescape html entities
 
@@ -50,11 +65,23 @@ class Section:
         return self.home + '?' + self.query
 
 # objectify & pretty print
-sections = [ str(Section(q,b,e)) for q,b,e in re.findall(pattern2, src) ]
-print '\n'.join(sections)
+#sections = [ str(Section(q,b,e)) for q,b,e in re.findall(sections, src) ]
+#print '\n'.join(sections)
 
-# old shit
-# m = re.findall(r"href=\"[^\?]+\?([^\"]+)\" >Articles ([0-9]+) .. ([0-9]+)",src)
-# sections = [ Section(q,b,e) for q,b,e in m ]
-# print sections
-# print len(sections)
+class Article:
+    def __init__(self, num, titre, texte):
+        self.num   = num
+        self.titre = titre
+        self.texte = texte
+
+    def __repr__(self):
+        return "Article #" + self.num + " : " + self.titre
+    
+    def __str__(self):
+        return __repr__(self)
+
+cc = Code(codes["civil"],"20100101")
+print cc.sections()
+print len(cc.sections())
+print len(cc.sections())
+print len(cc.sections())
