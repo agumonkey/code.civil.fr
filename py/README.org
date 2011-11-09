@@ -33,3 +33,11 @@ tag('div').attrs({M('foo'):M('bar')}) ::  Bind:Code c
    function/parser parent)
 
    HTMLParser     = functions
+
+Code /.tag().attrs()/ = 
+  title = One(Text($data))
+  sections = List(Article /.tag().attrs()/ =
+    title = One(Text())
+    definition = One(...)
+  )
+  
